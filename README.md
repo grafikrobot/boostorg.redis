@@ -9,7 +9,7 @@ The requirements for using Boost.Redis are:
 * Boost. The library is included in Boost distributions starting with 1.84.
 * C++17 or higher.
 * Redis 6 or higher (must support RESP3).
-* Gcc (10, 11, 12), Clang (11, 13, 14) and Visual Studio (16 2019, 17 2022).
+* Gcc (11, 12), Clang (11, 13, 14) and Visual Studio (16 2019, 17 2022).
 * Have basic-level knowledge about [Redis](https://redis.io/docs/)
   and [Boost.Asio](https://www.boost.org/doc/libs/1_82_0/doc/html/boost_asio/overview.html).
 
@@ -29,7 +29,7 @@ examples and tests cmake is supported, for example
 # Linux
 $ BOOST_ROOT=/opt/boost_1_84_0 cmake --preset g++-11
 
-# Windows 
+# Windows
 $ cmake -G "Visual Studio 17 2022" -A x64 -B bin64 -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
 ```
 
@@ -321,7 +321,7 @@ use the following response type
 ```cpp
 using boost::redis::ignore;
 
-using exec_resp_type = 
+using exec_resp_type =
    response<
       std::optional<std::string>, // get
       std::optional<std::vector<std::string>>, // lrange
@@ -472,7 +472,7 @@ be seen below
 The tests were performed with a 1000 concurrent TCP connections on the
 localhost where latency is 0.07ms on average on my machine. On higher
 latency networks the difference among libraries is expected to
-decrease. 
+decrease.
 
    * I expected Libuv to have similar performance to Asio and Tokio.
    * I did expect nodejs to come a little behind given it is is
@@ -616,7 +616,7 @@ from the IO objects.
 
 > redis-plus-plus also supports async interface, however, async
 > support for Transaction and Subscriber is still on the way.
-> 
+>
 > The async interface depends on third-party event library, and so
 > far, only libuv is supported.
 
@@ -701,6 +701,14 @@ https://lists.boost.org/Archives/boost/2023/01/253944.php.
 * ([Issue 182](https://github.com/boostorg/redis/issues/182)).
   Sets `"default"` as the default value of `config::username`. This
   makes it simpler to use the `requirepass` configuration in Redis.
+
+* ([Issue 189](https://github.com/boostorg/redis/issues/189)).
+  Fixes narrowing convertion by using `std::size_t` instead of
+  `std::uint64_t` for the sizes of bulks and aggregates. The code
+  relies now on `std::from_chars` returning an error if a value
+  greater than 32 is received on platforms on which the size
+  of`std::size_t` is 32.
+
 
 ### Boost 1.84 (First release in Boost)
 
@@ -798,7 +806,7 @@ https://lists.boost.org/Archives/boost/2023/01/253944.php.
   implemented properly without bloating the connection class. It is
   now a user responsibility to send HELLO. Requests that contain it have
   priority over other requests and will be moved to the front of the
-  queue, see `aedis::request::config` 
+  queue, see `aedis::request::config`
 
 * Automatic name resolving and connecting have been removed from
   `aedis::connection::async_run`. Users have to do this step manually
@@ -881,7 +889,7 @@ https://lists.boost.org/Archives/boost/2023/01/253944.php.
 
 * Removes `aedis::sync` class, see intro_sync.cpp for how to perform
   synchronous and thread safe calls. This is possible in Boost. 1.80
-  only as it requires `boost::asio::deferred`. 
+  only as it requires `boost::asio::deferred`.
 
 * Moves from `boost::optional` to `std::optional`. This is part of
   moving to C++17.
@@ -998,7 +1006,7 @@ https://lists.boost.org/Archives/boost/2023/01/253944.php.
 
 ### v0.2.0-1
 
-* Fixes a bug that happens on very high load. (v0.2.1) 
+* Fixes a bug that happens on very high load. (v0.2.1)
 * Major rewrite of the high-level API. There is no more need to use the low-level API anymore.
 * No more callbacks: Sending requests follows the ASIO asynchronous model.
 * Support for reconnection: Pending requests are not canceled when a connection is lost and are re-sent when a new one is established.
